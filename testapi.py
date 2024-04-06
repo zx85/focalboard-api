@@ -46,6 +46,19 @@ def get_teams(url, token):
     return teams
 
 
+def get_templates(url, token, team_id):
+    templates = []
+    headers = {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "Authorization": "Bearer " + token,
+    }
+    req = requests.get(url + "/teams/" + team_id + "/templates", headers=headers)
+    if req.status_code == 200:
+        templates = req.json()
+    return templates
+
+
 def get_boards(url, token, team):
     boards = []
     headers = {
@@ -84,7 +97,7 @@ def main():
         if repair_cafe_date in each_board["title"]
     ][0]
     cards = get_cards(url, token, board_id)
-    print(json.dumps(cards))
+    print(json.dumps(get_templates(url, token, first_team_id)))
 
 
 if __name__ == "__main__":

@@ -94,7 +94,10 @@ def create_card(url, token, board_id):
         "X-Requested-With": "XMLHttpRequest",
         "Authorization": "Bearer " + token,
     }
-    card_details = {"title": "testing", "status": "received"}
+    card_details = {
+        "title": "playing with properties",
+        "a9ctq6eyxy9pkcc18dpot439bsw": "ao9w4t3desyyektq1qrcz6nsxzw",
+    }
     req = requests.post(
         url + "/boards/" + board_id + "/cards", json=card_details, headers=headers
     )
@@ -115,9 +118,14 @@ def main():
         if repair_cafe_date in each_board["title"]
     ][0]
     cards = get_cards(url, token, board_id)
-    print(json.dumps(get_blocks(url, token, board_id)))
-    # create_card(url, token, board_id)
     # print(json.dumps(cards))
+    # Blocks does something but I don't know what
+    # print(json.dumps(get_blocks(url, token, board_id)))
+    create_card(url, token, board_id)
+    # Haven't worked out how to change the status (eg to RECEIVED)
+    # eg it does a PATCH to cb3ehj1e4ijg3pfqf383pri6wnr
+    # With properties
+    # a9ctq6eyxy9pkcc18dpot439bsw	"ao9w4t3desyyektq1qrcz6nsxzw"
 
 
 if __name__ == "__main__":

@@ -67,7 +67,6 @@ def get_cards(url, token, board_id):
         "Authorization": "Bearer " + token,
     }
     req = requests.get(url + "/boards/" + board_id + "/cards", headers=headers)
-    print(req.status_code)
     if req.status_code == 200:
         cards = req.json()
     return cards
@@ -85,7 +84,7 @@ def main():
         if repair_cafe_date in each_board["title"]
     ][0]
     cards = get_cards(url, token, board_id)
-    print(cards)
+    print(json.dumps(cards))
 
 
 if __name__ == "__main__":

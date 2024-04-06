@@ -46,17 +46,19 @@ def get_teams(url, token):
     return teams
 
 
-def get_templates(url, token, team_id):
-    templates = []
+def get_blocks(url, token, board_id):
+    blocks = []
     headers = {
         "Accept": "application/json",
         "X-Requested-With": "XMLHttpRequest",
         "Authorization": "Bearer " + token,
     }
-    req = requests.get(url + "/teams/" + team_id + "/templates", headers=headers)
+    req = requests.get(url + "/boards/" + board_id + "/blocks", headers=headers)
     if req.status_code == 200:
-        templates = req.json()
-    return templates
+        blocks = req.json()
+    else:
+        print(f"Oh no... status code {req.status_code}")
+    return blocks
 
 
 def get_boards(url, token, team):
@@ -85,6 +87,22 @@ def get_cards(url, token, board_id):
     return cards
 
 
+def create_card(url, token, board_id):
+    response = {}
+    headers = {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "Authorization": "Bearer " + token,
+    }
+    card_details = {"title": "testing", "status": "received"}
+    req = requests.post(
+        url + "/boards/" + board_id + "/cards", json=card_details, headers=headers
+    )
+    if req.status_code == 200:
+        response = req.json()
+    print(json.dumps(response))
+
+
 def main():
     username = os.getenv("user_name")
     password = os.getenv("user_pass")
@@ -97,7 +115,9 @@ def main():
         if repair_cafe_date in each_board["title"]
     ][0]
     cards = get_cards(url, token, board_id)
-    print(json.dumps(get_templates(url, token, first_team_id)))
+    print(json.dumps(get_blocks(url, token, board_id)))
+    # create_card(url, token, board_id)
+    # print(json.dumps(cards))
 
 
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ import json
 import os
 import jmespath
 
+# API gubbins here: https://htmlpreview.github.io/?https://github.com/mattermost/focalboard/blob/main/server/swagger/docs/html/index.html
+
 # use the .env file for security y'know
 # user_name = Focalboard username
 # user_pass = Focalboard password
@@ -12,6 +14,8 @@ import jmespath
 load_dotenv()
 
 url = "https://focalboard.zx85.me/api/v2"
+# This will likely change from board to board chiz chiz
+received_tuple = {"a9ctq6eyxy9pkcc18dpot439bsw": "ao9w4t3desyyektq1qrcz6nsxzw"}
 
 
 def do_login(url, username, password):
@@ -87,7 +91,7 @@ def get_cards(url, token, board_id):
     return cards
 
 
-def create_card(url, token, board_id):
+def create_card(url, token, board_id, title):
     response = {}
     headers = {
         "Accept": "application/json",
@@ -95,15 +99,34 @@ def create_card(url, token, board_id):
         "Authorization": "Bearer " + token,
     }
     card_details = {
-        "title": "playing with properties",
-        "a9ctq6eyxy9pkcc18dpot439bsw": "ao9w4t3desyyektq1qrcz6nsxzw",
+        "title": title,
     }
     req = requests.post(
         url + "/boards/" + board_id + "/cards", json=card_details, headers=headers
     )
     if req.status_code == 200:
         response = req.json()
-    print(json.dumps(response))
+    return response["id"]
+
+
+def move_card_to_received(url, token, card_id, received_tuple):
+    response = {}
+    headers = {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "Authorization": "Bearer " + token,
+    }
+
+    req = requests.patch(
+        url + "/cards/" + card_id,
+        json=received_tuple,
+        headers=headers,
+    )
+    if req.status_code == 200:
+        # response = req.json()
+        response = req.text
+        print(response)
+    return response
 
 
 def main():
@@ -119,13 +142,18 @@ def main():
     ][0]
     cards = get_cards(url, token, board_id)
     # print(json.dumps(cards))
-    # Blocks does something but I don't know what
-    # print(json.dumps(get_blocks(url, token, board_id)))
-    create_card(url, token, board_id)
+
+    # This bit creates a new card
+    title = "Trying to patch"
+    new_card_id = create_card(url, token, board_id, title)
+    print(f"New card ID is {new_card_id}")
+
     # Haven't worked out how to change the status (eg to RECEIVED)
     # eg it does a PATCH to cb3ehj1e4ijg3pfqf383pri6wnr
-    # With properties
-    # a9ctq6eyxy9pkcc18dpot439bsw	"ao9w4t3desyyektq1qrcz6nsxzw"
+    # With properties like "a9ctq6eyxy9pkcc18dpot439bsw": "ao9w4t3desyyektq1qrcz6nsxzw"
+    # (As seen in developer mode on the browser)
+    # TODO: get block_id from blocks and then patch that block?
+    move_card_to_received(url, token, new_card_id, received_tuple)
 
 
 if __name__ == "__main__":

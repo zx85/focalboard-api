@@ -154,6 +154,7 @@ def main():
     # (As seen in developer mode on the browser)
     # TODO: get block_id from blocks and then patch that block?
     move_card_to_received(url, token, new_card_id, received_tuple)
+    # looks like this does something but randomly it creates a new card?
 
 
 if __name__ == "__main__":
